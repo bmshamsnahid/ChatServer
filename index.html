@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Chat Server</title>
+
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+	<!-- Optional theme -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+	<style type="text/css">
+		.hideElement {
+		    display: none;
+		    visibility: hidden;
+		}
+		.scroll {
+		    height: 450px;
+		    overflow: scroll;
+		}
+	</style>
+</head>
+<body>
+
+	<div class="row" id='userNameInputPortion'>
+	    <div class="col-md-8 col-md-offset-3">
+	    	<form id='userNameInputForm'>
+		        <h2>Grab A UserName</h2>
+		        <div class='row col-md-4'>
+		        	<input type="text" id="userNameInput" class="form-control" placeholder="User Name">
+		        </div>
+		        <div class='row col-md-4'>
+		        	<button class='btn' type='submit' id='userNameInputButton'>Submit</button>
+		        </div>
+		    </form>	
+	    </div>
+	</div>
+
+	<div class='row hideElement' id='chatPortion'>
+		<div class='col-md-6'>
+			<div class='panel panel-default' id='charHistory'>
+			<div class='panel-heading text-center'>Chat History</div>
+			<div class='panel-Body scroll' id='messageBody'></div>
+			<div class='panel-footer'>
+				<div class='row'>
+					<form id='messageInputForm'>
+				        <div class='col-md-6'>
+				        	<input type="text" id='messageInput' class="form-control" placeholder="Message">
+				        </div>
+				        <div class=''>
+				        	<button class='btn btn-primary' type='submit' id='messageInputButton'>Send</button>
+				        </div>
+				    </form>			
+				</div>
+			</div>
+		</div>
+		</div>
+
+		<div class='col-md-6' id='onlineListPortion'>
+			<div class='panel panel-default' id='onlneListpanel'>
+			<div class='panel-heading text-center'>Online List</div>
+			<div class='panel-Body text-center scroll' id='onlineList'></div>
+		</div>
+	</div>
+	<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        $(function(){
+        	/*
+        	username receiving variable
+        	*/
+        	var userNameInputForm = $('#userNameInputForm');
+            var userNameInput = $('#userNameInput');
+
+        	/*handling the form form message
+        	grab all the input in the variable
+        	*/
+            var messageInputForm = $('#messageInputForm');
+            var messageInput = $('#messageInput');
+            var messageBody = $('#messageBody');
+
+            //socket defined i client side
+            var socket = io.connect();
+            //manipualted from the server online list
+            var onlineList = $('#onlineList')
+
+            userNameInputForm.submit(function(e){
+                e.preventDefault();
+                socket.emit('getAnUser', userNameInput.val(), function(data){
+                    if(data){
+                    	$('#chatPortion').removeClass('hideElement');
+                    	$('#userNameInputPortion').addClass('hideElement');
+                    } else {
+                        alert('Username is already taken');
+                    }
+                });
+                userNameInput.val('');
+            });
+            socket.on('onlineList', function(onlineUserInfo){
+                var onlineUserList = '';
+                for(i=0; i<onlineUserInfo.length; i++){
+                    onlineUserList += (onlineUserInfo[i] + '<br/>');
+                }
+                onlineList.html(onlineUserList);
+            })
+            messageInputForm.submit(function(e){
+                e.preventDefault();
+                socket.emit('sendingMessageInfo', messageInput.val());
+                messageInput.val('');
+            });
+            socket.on('newMessageFound', function(messageInfo){
+            	if(messageInfo.type == 'general') {
+            		messageBody.append('<strong>' + messageInfo.sender + ': </strong> '+ messageInfo.message + '<br/>');
+            	}
+            	else if(messageInfo.type == 'join') {
+            		messageBody.append('<font color="green">' + messageInfo.sender + ' ' + messageInfo.message +'</font><br/>');
+            	} else if(messageInfo.type == 'leave') {
+            		messageBody.append('<font color="red">' + messageInfo.sender + ' ' + messageInfo.message +'</font> <br/>');
+            	}
+            });
+        })
+    </script>
+
+</body>
+</html>
