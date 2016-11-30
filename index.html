@@ -110,12 +110,13 @@
                 socket.emit('sendingMessageInfo', messageInput.val());
                 messageInput.val('');
             });
+
             socket.on('newMessageFound', function(messageInfo){
             	if(messageInfo.type == 'general') {
             		messageBody.append('<strong>' + messageInfo.sender + ': </strong> '+ messageInfo.message + '<br/>');
-            	}
-            	else if(messageInfo.type == 'join') {
-            		messageBody.append('<font color="green">' + messageInfo.sender + ' ' + messageInfo.message +'</font><br/>');
+            	} else if(messageInfo.type == 'join') {
+            		messageBody.append(messageInfo.messageHistory +  '<br/>');
+            		
             	} else if(messageInfo.type == 'leave') {
             		messageBody.append('<font color="red">' + messageInfo.sender + ' ' + messageInfo.message +'</font> <br/>');
             	}

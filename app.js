@@ -40,11 +40,28 @@ function messageAndUser(userName, messageBody, messageType) {
        } 
     });
 
-	io.sockets.emit('newMessageFound', {
-		message: messageBody,	//assign body
-		sender: userName,	//assing name
-		type: messageType	//assign type
-	});
+    if(messageType == 'join') {
+    	var messages = db.get('messages');
+		messages.find({}, {}, function(err, messages) {
+			var str = '';
+			for(var i=0; i<messages.length; i++) {
+    			var fullMessage = messages[i];
+    			str += (fullMessage.name + ' ' + fullMessage.messageBody + '<br/>');
+    		}
+    		console.log(str);
+
+			io.sockets.emit('newMessageFound', {
+				type: messageType,	//assign type
+				messageHistory: str
+			});
+		});
+    } else {
+    	io.sockets.emit('newMessageFound', {
+			message: messageBody,	//assign body
+			sender: userName,	//assing name
+			type: messageType	//assign type
+		});
+    }
 }
 
 //check ig a new user connected
