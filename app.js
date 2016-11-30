@@ -2,6 +2,10 @@ var express = require('express');
 var app = express();
 var server = require('http').createServer(app);
 var io = require('socket.io').listen(server);
+var mongo = require('mongodb');
+var db = require('monk')('mongodb://ShamsNahid:56316498@ds117348.mlab.com:17348/chatserver');
+//var db = require('monk')('localhost/chatserver');
+
 server.listen(process.env.PORT || 3000);
 app.get('/', function(req, res) {
 	res.sendFile(__dirname + '/index.html');
@@ -25,6 +29,17 @@ message type provide general, leave or join
 after got all info, send it to the client
 */
 function messageAndUser(userName, messageBody, messageType) {
+	var messages = db.get('messages');
+	messages.insert({
+        'name': userName,
+        'messageBody': messageBody,
+        'messageType': messageType
+    }, function(err, message){
+       if(err) {
+       	console.log('Error Found ' + err);
+       } 
+    });
+
 	io.sockets.emit('newMessageFound', {
 		message: messageBody,	//assign body
 		sender: userName,	//assing name

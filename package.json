@@ -4,6 +4,8 @@
     "private": "true",
     "dependencies":{
         "socket.io": "*",
-        "express": "*"
+        "express": "*",
+        "mongodb": 	"*",
+		"monk": "*"
     }
 }
