@@ -49,7 +49,7 @@ function messageAndUser(userName, messageBody, messageType) {
     			var fullMessage = messages[i];
 
     			if(fullMessage.messageType == 'general') {
-            		str += ('<strong>' + fullMessage.name + ': </strong> ' + fullMessage.messageBody + ' ' + fullMessage.messageType + '<br/>');
+            		str += ('<strong>' + fullMessage.name + ': </strong> ' + fullMessage.messageBody + '<br/>');
             	} else if(fullMessage.messageType == 'join') {
             		str += ('<strong>' + fullMessage.name + '</strong> <font color="green">just joined.</font>' + '<br/>');
             	} else if(fullMessage.messageType == 'leave') {
