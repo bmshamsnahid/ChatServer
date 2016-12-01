@@ -11,6 +11,22 @@
 
 	<!-- Latest compiled and minified JavaScript -->
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+	<script>
+		$(document).ready(function(){  
+		       $('#messageBody').scrollTop($('#messageBody').height());
+		});
+	</script>
+
+
+	<!-- <script type="text/javascript">
+		$(document).ready(function(){
+	        $("#messageBody").scrollTop(250);
+		});
+	</script> -->
+
 	<style type="text/css">
 		.hideElement {
 		    display: none;
@@ -18,12 +34,19 @@
 		}
 		.scroll {
 		    height: 450px;
-		    overflow: scroll;
+		    overflow: scroll; 
+		    overflow-y: scroll;
+			overflow-x: hidden; 
+		}
+		.scrollBody {
+			border:1px solid black;
+			height:450px;
+			overflow:auto
 		}
 	</style>
 </head>
 <body>
-
+	
 	<div class="row" id='userNameInputPortion'>
 	    <div class="col-md-8 col-md-offset-3">
 	    	<form id='userNameInputForm'>
@@ -42,7 +65,7 @@
 		<div class='col-md-6'>
 			<div class='panel panel-default' id='charHistory'>
 			<div class='panel-heading text-center'>Chat History</div>
-			<div class='panel-Body scroll' id='messageBody'></div>
+			<div class='scroll' id='messageBody'></div>
 			<div class='panel-footer'>
 				<div class='row'>
 					<form id='messageInputForm'>
@@ -66,8 +89,11 @@
 	</div>
 	<script src="http://code.jquery.com/jquery-latest.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
-    <script>
+    <script>    	
         $(function(){
+        	//$.scrollTo($("#messageBody").height())
+        	//$('#message').scrollTo('max');
+
         	/*
         	username receiving variable
         	*/
@@ -97,6 +123,8 @@
                     }
                 });
                 userNameInput.val('');
+
+                
             });
             socket.on('onlineList', function(onlineUserInfo){
                 var onlineUserList = '';
@@ -109,9 +137,15 @@
                 e.preventDefault();
                 socket.emit('sendingMessageInfo', messageInput.val());
                 messageInput.val('');
+                var messageBody1 = document.querySelector('#messageBody');
+				messageBody1.scrollTop = (messageBody1.scrollHeight - messageBody1.clientHeight + 30);
             });
 
             socket.on('newMessageFound', function(messageInfo){
+            		//$('#messageBody').scrollTop($("#messageBody").height());
+            	//$('#messageBody').scrollTop(450);
+            	
+            	
             	if(messageInfo.type == 'general') {
             		messageBody.append('<strong>' + messageInfo.sender + ': </strong> '+ messageInfo.message + '<br/>');
             	} else if(messageInfo.type == 'join') {
@@ -120,6 +154,9 @@
             	} else if(messageInfo.type == 'leave') {
             		messageBody.append('<font color="red">' + messageInfo.sender + ' ' + messageInfo.message +'</font> <br/>');
             	}
+
+            	var messageBody1 = document.querySelector('#messageBody');
+				messageBody1.scrollTop = (messageBody1.scrollHeight - messageBody1.clientHeight);
             });
         })
     </script>

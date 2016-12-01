@@ -48,7 +48,7 @@ function messageAndUser(userName, messageBody, messageType) {
     			var fullMessage = messages[i];
     			str += (fullMessage.name + ' ' + fullMessage.messageBody + '<br/>');
     		}
-    		console.log(str);
+    		//console.log(str);
 
 			io.sockets.emit('newMessageFound', {
 				type: messageType,	//assign type
