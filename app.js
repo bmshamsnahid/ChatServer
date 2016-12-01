@@ -45,8 +45,18 @@ function messageAndUser(userName, messageBody, messageType) {
 		messages.find({}, {}, function(err, messages) {
 			var str = '';
 			for(var i=0; i<messages.length; i++) {
+				//console.log('In the loop');
     			var fullMessage = messages[i];
-    			str += (fullMessage.name + ' ' + fullMessage.messageBody + '<br/>');
+
+    			if(fullMessage.messageType == 'general') {
+            		str += ('<strong>' + fullMessage.name + ': </strong> ' + fullMessage.messageBody + ' ' + fullMessage.messageType + '<br/>');
+            	} else if(fullMessage.messageType == 'join') {
+            		str += ('<strong>' + fullMessage.name + '</strong> <font color="green">just joined.</font>' + '<br/>');
+            	} else if(fullMessage.messageType == 'leave') {
+            		str += ('<strong>' + fullMessage.name + '</strong> <font color="red">just leave</font>' + '<br/>'); 	
+            	}
+    			
+    			//str += (fullMessage.name + ' ' + fullMessage.messageBody + ' ' + fullMessage.messageType + '<br/>');
     		}
     		//console.log(str);
 
